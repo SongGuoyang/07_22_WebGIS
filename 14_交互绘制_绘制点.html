@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- 1.引入openlayer -->
+    <script src = './dist/include-openlayers-local.js'></script>
+    <script src = './gaode.js'></script>
+</head>
+<body>
+    <div id="menu">
+        <label style="font-weight: bold;">
+            几何图形类型：&nbsp;
+        </label>
+        <select id="type">
+            <option value="None">无</option>
+            <option value="Point" selected="selected">点</option>
+            <option value="LineString">线</option>
+            <option value="Polygon">多边形</option>
+            <option value="Circle">圆</option>
+            <option value="Square">正方形</option>
+            <option value="Box">长方形</option>
+        </select>
+    </div>
+    <!-- 2.创建div容器 -->
+    <div id = 'mapCon'></div>
+    
+    <!-- 3.创建高德地图-->
+    <!-- 
+        参数一：显示瓦片的名称，可以为空
+        参数二：瓦片地图的实际名称
+        参数三：对象类型，IGServer的配置信息
+     -->
+    <script>
+        var typeSelect = document.getElementById('type');
+        //绘制对象
+        var draw;
+    // 4. 创建地图对象
+    const map = new ol.Map({
+        // 目标：显示的位置
+        target:'mapCon',
+        // 要加载的图层
+        layers:[gaodeMapLayer],
+        // 视图：以什么方式显示
+        view:new ol.View({
+            // 默认中心
+            center: [12700000, 3500000],
+            // 默认等级
+            zoom: 6
+        })
+    });
+    //实例化一个矢量图层Vector作为绘制层
+    var source = new ol.source.Vector({ wrapX: false });
+        var vector = new ol.layer.Vector({
+            source: source,
+            style: new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: 'rgba(255, 255, 255, 0.2)'
+                }),
+                stroke: new ol.style.Stroke({
+                    color: '#ffcc33',
+                    width: 2
+                }),
+                image: new ol.style.Circle({
+                    radius: 7,
+                    fill: new ol.style.Fill({
+                        color: '#ffcc33'
+                    })
+                })
+            })
+        });
+        //将绘制层添加到地图容器中
+        map.addLayer(vector);
+        
+        //根据绘制类型进行交互绘制图形处理
+        function addInteraction() {
+            //绘制类型
+            var value = typeSelect.value;
+            if (value !== 'None') {
+                if (source == null) {
+                    source = new ol.source.Vector({ wrapX: false });
+                    //添加绘制层数据源
+                    vector.setSource(source);
+                }
+                var geometryFunction, maxPoints;
+                if (value === 'Square') {
+                    value = 'Circle';
+                    //正方形图形（圆）
+                    geometryFunction = ol.interaction.Draw.createRegularPolygon(4);
+
+                } else if (value === 'Box') {
+                    value = 'LineString';
+                    maxPoints = 2;
+                    geometryFunction = function (coordinates, geometry) {
+                        if (!geometry) {
+                            //多边形
+                            geometry = new ol.geom.Polygon(null);
+                        }
+                        var start = coordinates[0];
+                        var end = coordinates[1];
+                        geometry.setCoordinates([
+                            [start, [start[0], end[1]], end, [end[0], start[1]], start]
+                        ]);
+                        return geometry;
+                    };
+                  }
+                //实例化交互绘制类对象并添加到地图容器中
+                draw = new ol.interaction.Draw({
+                    //绘制层数据源
+                    source: source,
+                    /** @type {ol.geom.GeometryType}几何图形类型 */
+                    type: value,
+                    //几何信息变更时调用函数
+                    geometryFunction: geometryFunction,
+                    //最大点数
+                    maxPoints: maxPoints
+                });
+                map.addInteraction(draw);
+            }
+            else {
+                source = null;
+                //清空绘制图形
+                vector.setSource(source);
+            }
+        }
+
+        /**
+        * 用户更改绘制类型触发的事件.
+        * @param {Event} e 更改事件
+        */
+        typeSelect.onchange = function (e) {
+            //移除绘制图形
+            map.removeInteraction(draw);
+            //添加交互绘制功能控件
+            addInteraction();
+        };
+        //添加交互绘制功能控件
+        addInteraction();
+    </script>
+</body>
+</html>

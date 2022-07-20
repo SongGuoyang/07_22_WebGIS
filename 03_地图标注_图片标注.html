@@ -16,7 +16,8 @@
         target:'mapCon',
         layers:[gaodeMapLayer],
         view:new ol.View({
-            center: [12700000, 3500000],
+            projection: 'EPSG:4326',
+            center: [114,30],
             zoom: 6
         })
     });
@@ -41,7 +42,7 @@
 
     //实例化Vector要素，通过矢量图层添加到地图容器中
     var iconFeature = new ol.Feature({
-            geometry: new ol.geom.Point(114,30)
+            geometry: new ol.geom.Point([114,30])
         });
         iconFeature.setStyle(icon);
         //矢量标注的数据源

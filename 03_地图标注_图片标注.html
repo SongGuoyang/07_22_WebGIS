@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src = './dist/include-openlayers-local.js'></script>
+    <script src = './gaode.js'></script>
+</head>
+<body>
+    <div id = 'mapCon'></div>
+
+    <script>
+    const map = new ol.Map({
+        target:'mapCon',
+        layers:[gaodeMapLayer],
+        view:new ol.View({
+            center: [12700000, 3500000],
+            zoom: 6
+        })
+    });
+
+    const icon = new ol.style.Style({
+                /**{olx.style.IconOptions}类型*/
+                image: new ol.style.Icon({
+                        anchor: [0.5, 60],
+                        anchorOrigin: 'top-right',
+                        anchorXUnits: 'fraction',
+                        anchorYUnits: 'pixels',
+                        offsetOrigin: 'top-right',
+                        // offset:[0,10],
+                        //图标缩放比例
+                        // scale:0.5,
+                        //透明度
+                        opacity: 0.75,
+                        //图标的url
+                        src: './images/location.png'
+                    })
+            });
+
+    //实例化Vector要素，通过矢量图层添加到地图容器中
+    var iconFeature = new ol.Feature({
+            geometry: new ol.geom.Point(114,30)
+        });
+        iconFeature.setStyle(icon);
+        //矢量标注的数据源
+        var vectorSource = new ol.source.Vector({
+            features: [iconFeature]
+        });
+        //矢量标注图层
+        var vectorLayer = new ol.layer.Vector({
+            source: vectorSource
+        });
+        map.addLayer(vectorLayer);
+    </script>
+</body>
+</html>

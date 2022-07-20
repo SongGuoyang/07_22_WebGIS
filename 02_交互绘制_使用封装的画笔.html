@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- 1.引入openlayer -->
+    <script src = './dist/include-openlayers-local.js'></script>
+    <script src = './gaode.js'></script>
+    <script src = 'draw.js'></script>
+</head>
+<body>
+    <div id="menu">
+        <button onclick="active()">激活</button>
+        <button onclick="exit()">退出</button>
+        <button onclick="reset()">重置</button>
+    </div>
+    <!-- 2.创建div容器 -->
+    <div id = 'mapCon'></div>
+
+    <!-- 3.创建高德地图-->
+    <!-- 
+        参数一：显示瓦片的名称，可以为空
+        参数二：瓦片地图的实际名称
+        参数三：对象类型，IGServer的配置信息
+     -->
+    <script>
+
+
+    // 4. 创建地图对象
+    const map = new ol.Map({
+        // 目标：显示的位置
+        target:'mapCon',
+        // 要加载的图层
+        layers:[gaodeMapLayer],
+        // 视图：以什么方式显示
+        view:new ol.View({
+            // 默认中心
+            center: [12700000, 3500000],
+            // 默认等级
+            zoom: 6
+        })
+    });
+    
+        //实例化一个矢量图层Vector作为绘制层
+        var source = new ol.source.Vector({ wrapX: false });
+        var vector = new ol.layer.Vector({
+            source: source,
+            style: new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: 'rgba(255, 255, 255, 0.2)'
+                }),
+                stroke: new ol.style.Stroke({
+                    color: '#ffcc33',
+                    width: 2
+                }),
+                image: new ol.style.Circle({
+                    radius: 7,
+                    fill: new ol.style.Fill({
+                        color: '#ffcc33'
+                    })
+                })
+            })
+         });
+        //将绘制层添加到地图容器中
+        map.addLayer(vector);
+        // 添加一个画笔
+    let draw
+    function active() {
+        draw = createDraw(source,'Point')
+    }
+    function exit(){
+        map.removeInteraction(draw)
+    }
+    function reset(){
+        source.clear()
+    }
+    </script>
+</body>
+</html>

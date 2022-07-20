@@ -39,12 +39,28 @@
                         src: './images/location.png'
                     })
             });
+    const lable = new ol.style.Style({
+                text: new ol.style.Text({
+                    //位置
+                    textAlign: 'center',
+                    //基准线
+                    textBaseline: 'middle',
+                    //文字样式
+                    font: 'normal 14px 微软雅黑',
+                    //文本内容
+                    text: feature.get('name'),
+                    //文本填充样式（即文字颜色）
+                    fill: new ol.style.Fill({ color: '#aa3300' }),
+                    stroke: new ol.style.Stroke({ color: '#ffcc33', width: 2 })
+                })
+            });
 
     //实例化Vector要素，通过矢量图层添加到地图容器中
     var iconFeature = new ol.Feature({
-            geometry: new ol.geom.Point([114,30])
+            geometry: new ol.geom.Point([114,30]),
+            name: '武汉市',
         });
-        iconFeature.setStyle(icon);
+        iconFeature.setStyle(lable);
         //矢量标注的数据源
         var vectorSource = new ol.source.Vector({
             features: [iconFeature]

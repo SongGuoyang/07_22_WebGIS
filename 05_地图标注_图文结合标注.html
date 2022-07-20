@@ -22,40 +22,41 @@
         })
     });
 
-    const icon = new ol.style.Style({
-                /**{olx.style.IconOptions}类型*/
+
+    var createLabelStyle = function (feature) {
+        return new ol.style.Style({
+            text: new ol.style.Text({
+                // 设置XY上的偏移值
+                offsetX:0,
+                offsetY:10,
+                //位置
+                textAlign: 'center',
+                //基准线
+                textBaseline: 'middle',
+                //文字样式
+                font: 'normal 14px 微软雅黑',
+                //文本内容
+                text: feature.get('name'),
+                //文本填充样式（即文字颜色）
+                fill: new ol.style.Fill({ color: '#aa3300' }),
+                stroke: new ol.style.Stroke({ color: '#ffcc33', width: 2 })
+            }),
                 image: new ol.style.Icon({
-                        anchor: [0.5, 60],
-                        anchorOrigin: 'top-right',
-                        anchorXUnits: 'fraction',
-                        anchorYUnits: 'pixels',
-                        offsetOrigin: 'top-right',
-                        // offset:[0,10],
-                        //图标缩放比例
-                        scale:0.5,
-                        //透明度
-                        opacity: 0.75,
-                        //图标的url
-                        src: './images/location.png'
-                    })
-            });
-            var createLabelStyle = function (feature) {
-            return new ol.style.Style({
-                text: new ol.style.Text({
-                    //位置
-                    textAlign: 'center',
-                    //基准线
-                    textBaseline: 'middle',
-                    //文字样式
-                    font: 'normal 14px 微软雅黑',
-                    //文本内容
-                    text: feature.get('name'),
-                    //文本填充样式（即文字颜色）
-                    fill: new ol.style.Fill({ color: '#aa3300' }),
-                    stroke: new ol.style.Stroke({ color: '#ffcc33', width: 2 })
+                    anchor: [0.5, 60],
+                    anchorOrigin: 'top-right',
+                    anchorXUnits: 'fraction',
+                    anchorYUnits: 'pixels',
+                    offsetOrigin: 'top-right',
+                    // offset:[0,10],
+                    //图标缩放比例
+                    scale:0.5,
+                    //透明度
+                    opacity: 0.75,
+                    //图标的url
+                    src: './images/location.png'
                 })
             });
-            }
+        }
 
     //实例化Vector要素，通过矢量图层添加到地图容器中
     var iconFeature = new ol.Feature({

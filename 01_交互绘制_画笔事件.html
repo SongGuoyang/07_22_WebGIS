@@ -44,7 +44,24 @@
     
         //实例化一个矢量图层Vector作为绘制层
         var source = new ol.source.Vector({ wrapX: false });
-        var vector = new ol.layer.Vector({source: source });
+        var vector = new ol.layer.Vector({
+            source: source,
+            style: new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: 'rgba(255, 255, 255, 0.2)'
+                }),
+                stroke: new ol.style.Stroke({
+                    color: '#ffcc33',
+                    width: 2
+                }),
+                image: new ol.style.Circle({
+                    radius: 7,
+                    fill: new ol.style.Fill({
+                        color: '#ffcc33'
+                    })
+                })
+            })
+         });
         //将绘制层添加到地图容器中
         map.addLayer(vector);
         // 添加一个画笔
@@ -55,6 +72,10 @@
             type:'Point',
         })
         map.addInteraction(draw)
+        // 画笔画完之后，可以监听一个事件：drawend
+        draw.on('drawend',function(){
+            alert('画完了')
+        })
     }
     function exit(){
         map.removeInteraction(draw)

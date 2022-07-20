@@ -69,6 +69,11 @@
     let draw
     function active() {
         draw = createDraw(source,'Point')
+        map.addInteraction(draw)
+        // 画笔画完之后，可以监听一个事件：drawend
+        draw.on('drawend',function(){
+            console.log('画完了')
+        })
     }
     function exit(){
         map.removeInteraction(draw)

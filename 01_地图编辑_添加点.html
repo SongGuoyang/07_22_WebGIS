@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- 1.引入openlayer -->
+    <script src = './dist/include-openlayers-local.js'></script>
+    <script src = './gaode.js'></script>
+    <script src = 'draw.js'></script>
+</head>
+<body>
+    <div id="menu">
+        <!-- <label style="font-weight: bold;">
+            几何图形类型：&nbsp;
+        </label>
+        <select id="type">
+            <option value="None">无</option>
+            <option value="Point" selected="selected">点</option>
+            <option value="LineString">线</option>
+            <option value="Polygon">多边形</option>
+            <option value="Circle">圆</option>
+            <option value="Square">正方形</option>
+            <option value="Box">长方形</option>
+        </select> -->
+        <input type="button" class="ButtonLib" value="添加点要素" onclick="addPoint()" />
+    </div>
+    <!-- 2.创建div容器 -->
+    <div id = 'mapCon'></div>
+    
+    <!-- 3.创建高德地图-->
+    <!-- 
+        参数一：显示瓦片的名称，可以为空
+        参数二：瓦片地图的实际名称
+        参数三：对象类型，IGServer的配置信息
+     -->
+    <script>
+        var typeSelect = document.getElementById('type');
+        //绘制对象
+        var draw;
+    // 4. 创建地图对象
+    const docLayer = new Zondy.Map.Doc('','map_point1',{
+            // ip地址
+            import:'localhost',
+            // 端口
+            port:6163,
+        })
+    // 4. 创建地图对象
+    const map = new ol.Map({
+        target:'mapCon',
+        layers:[gaodeMapLayer,docLayer],
+        view:new ol.View({
+            projection: 'EPSG:4326',
+            center: [120,40],
+            zoom: 4
+        })
+    });
+    // //实例化一个矢量图层Vector作为绘制层
+    // var source = new ol.source.Vector({ wrapX: false });
+    //     var vector = new ol.layer.Vector({
+    //         source: source,
+    //         style: new ol.style.Style({
+    //             fill: new ol.style.Fill({
+    //                 color: 'rgba(255, 255, 255, 0.2)'
+    //             }),
+    //             stroke: new ol.style.Stroke({
+    //                 color: '#ffcc33',
+    //                 width: 2
+    //             }),
+    //             image: new ol.style.Circle({
+    //                 radius: 7,
+    //                 fill: new ol.style.Fill({
+    //                     color: '#ffcc33'
+    //                 })
+    //             })
+    //         })
+    //     });
+    //     //将绘制层添加到地图容器中
+    //     map.addLayer(vector);
+        
+    //     //根据绘制类型进行交互绘制图形处理
+    //     function addInteraction() {
+    //         //绘制类型
+    //         var value = typeSelect.value;
+    //         if (value !== 'None') {
+    //             if (source == null) {
+    //                 source = new ol.source.Vector({ wrapX: false });
+    //                 //添加绘制层数据源
+    //                 vector.setSource(source);
+    //             }
+    //             //实例化交互绘制类对象并添加到地图容器中
+    //             draw = createDraw(source,value);
+    //             map.addInteraction(draw);
+    //         }
+    //         else {
+    //             source = null;
+    //             //清空绘制图形
+    //             vector.setSource(source);
+    //         }
+    //     }
+
+    //     /**
+    //     * 用户更改绘制类型触发的事件.
+    //     * @param {Event} e 更改事件
+    //     */
+    //     typeSelect.onchange = function (e) {
+    //         //移除绘制图形
+    //         map.removeInteraction(draw);
+    //         //添加交互绘制功能控件
+    //         addInteraction();
+    //     };
+    //     //添加交互绘制功能控件
+    //     addInteraction();
+
+        //添加点要素
+        function addPoint() {
+            //创建一个点形状，描述点形状的几何信息
+            var gpoint = new Zondy.Object.GPoint(120,30);//createPoint();
+            //设置当前点要素的几何信息
+            var fGeom = new Zondy.Object.FeatureGeometry({ PntGeom: [gpoint] });
+            //随机输出1~8之间的整数,作为新添加的要素的颜色号
+            var pntColor = Math.floor(Math.random() * 8 + 1);
+            //描述点要素的符号参数信息
+            var pointInfo = new Zondy.Object.CPointInfo({ Angle: 0, Color: 7, Space: 0, SymHeight: 12, SymID: 114, SymWidth: 12 });
+            //设置当前点要素的图形参数信息
+            var webGraphicInfo = new Zondy.Object.WebGraphicsInfo({ InfoType: 1, PntInfo: pointInfo });
+            //设置添加点要素的属性信息        
+            var attValue = ['中国'];
+            //创建一个要素
+            var feature = new Zondy.Object.Feature({ fGeom: fGeom, GraphicInfo: webGraphicInfo, AttValue: attValue });
+            //设置要素为点要素
+            feature.setFType(1);
+            //创建一个要素数据集
+            var featureSet = new Zondy.Object.FeatureSet();
+            featureSet.clear();
+            //设置属性结构
+            var cAttStruct = new Zondy.Object.CAttStruct({ FldName: ["name"], FldNumber: 3, FldType: ["string"] });
+            featureSet.AttStruct = cAttStruct;
+            //添加要素到要素数据集
+            featureSet.addFeature(feature);
+
+            //创建一个编辑服务类
+            var editService = new Zondy.Service.EditDocFeature("map_point1", 0, { 
+                ip: "localhost", 
+                port: "6163"    //访问IGServer的端口号，.net版为6163，Java版为8089
+            });
+            //执行添加点要素功能
+            editService.add(featureSet, onPntSuccess);
+        }
+
+        //添加点要素回调函数
+        function onPntSuccess(data) {
+            if (data.succeed) {
+                alert("添加点要素成功！");
+                docLayer.refresh();
+            } else {
+                alert("添加点要素失败！");
+            }
+        }
+    </script>
+</body>
+</html>

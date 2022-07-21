@@ -52,7 +52,7 @@
         layers:[gaodeMapLayer,docLayer],
         view:new ol.View({
             projection: 'EPSG:4326',
-            center: [120,40],
+            center: [-53,50],
             zoom: 4
         })
     });
@@ -116,7 +116,7 @@
         //添加点要素
         function addPoint() {
             //创建一个点形状，描述点形状的几何信息
-            var gpoint = new Zondy.Object.GPoint(120,30);//createPoint();
+            var gpoint = new Zondy.Object.GPoint(-53,50);//createPoint();
             //设置当前点要素的几何信息
             var fGeom = new Zondy.Object.FeatureGeometry({ PntGeom: [gpoint] });
             //随机输出1~8之间的整数,作为新添加的要素的颜色号
@@ -135,7 +135,7 @@
             var featureSet = new Zondy.Object.FeatureSet();
             featureSet.clear();
             //设置属性结构
-            var cAttStruct = new Zondy.Object.CAttStruct({ FldName: ["name"], FldNumber: 3, FldType: ["string"] });
+            var cAttStruct = new Zondy.Object.CAttStruct({ FldName: ["name"], FldNumber: 1, FldType: ["string"] });
             featureSet.AttStruct = cAttStruct;
             //添加要素到要素数据集
             featureSet.addFeature(feature);

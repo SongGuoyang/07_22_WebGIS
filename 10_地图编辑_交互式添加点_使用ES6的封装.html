@@ -50,8 +50,16 @@
     map.on('click', function (e) {
                 //鼠标单击点坐标
                 var coordinate = e.coordinate;
+                //第二种传值方式
+                const position = coordinate;
+                const layer = docLayer;
+                const attr = [{name:"name",value:"武汉",type:"string"}];
+                const service = {name:'map_point1',layerId:0};
                 Point.add({
-
+                    position, //属性名和属性值一样的话,可以只写一个 就相当于 position:position
+                    attr,
+                    service,
+                    layer
                 })
             }); 
     </script>

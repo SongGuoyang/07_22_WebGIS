@@ -30,20 +30,21 @@
     });
 
         function queryByPoint() {
-            var pointObj = new Zondy.Object.Point2D(114, 30);
+            // 创建一个用于查询的要素（用什么来查）
+            var pointObj = new Zondy.Object.Point2D(-80,58);
             //设置点容差半径
             pointObj.nearDis = 0.1;
 
-            //初始化查询结构对象，设置查询结构包含几何信息
+            //初始化查询结构对象，设置查询结构包含几何信息（查什么东西）
             var queryStruct = new Zondy.Service.QueryFeatureStruct();
             //是否包含几何图形信息
             queryStruct.IncludeGeometry = true;
             //是否包含属性信息
             queryStruct.IncludeAttribute = true;
             //是否包含图形显示参数
-            queryStruct.IncludeWebGraphic = false;
+            queryStruct.IncludeWebGraphic = true;
 
-            //指定查询规则
+            //指定查询规则（查询规则）
             var rule = new Zondy.Service.QueryFeatureRule({
                 //是否将要素的可见性计算在内
                 EnableDisplayCondition: false,
@@ -54,15 +55,32 @@
                 //是否相交
                 Intersect: true
             });
-            
+
             //实例化查询参数对象
             var queryParam = new Zondy.Service.QueryParameter({
-                r: Math.random(),
-                geometry: pointObj,
-                resultFormat: "json",
-                struct: queryStruct,
-                rule: rule
+                // r: Math.random(),
+                geometry: pointObj,//用什么来查询
+                resultFormat: "json",//查询结果返回格式
+                struct: queryStruct,// 设置查询结构
+                rule: rule//查询规格
             });
+
+            //实例化地图文档查询服务对象
+            var queryService = new Zondy.Service.QueryDocFeature(queryParam, "map_area1", 0, {
+                ip: "localhost",
+                port: "6163"    //访问IGServer的端口号，.net版为6163，Java版为8089
+            });
+            //执行查询操作，querySuccess为查询回调函数
+            queryService.query(querySuccess, queryError);
+        }
+
+        function querySuccess(params) {
+            alert('查询成功')
+            console.log(params);
+        }
+        function queryError(params) {
+            alert('查询失败')
+            console.log(params);
         }
 
     </script>

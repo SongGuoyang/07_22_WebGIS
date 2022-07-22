@@ -8,7 +8,7 @@
     <script src = './dist/include-openlayers-local.js'></script>
     <script src = './gaode.js'></script>
     <script src = 'draw.js'></script>
-    <script src = 'queryPoint.js'></script>
+    <script src = 'Point.js'></script>
 </head>
 <body>
     <div id = 'mapCon'></div>
@@ -32,7 +32,7 @@
                 //鼠标单击点坐标
                 var point = evt.coordinate;
                 // 调用封装的方法
-                queryPoint({ 
+                Point.query({ 
                     position:point, 
                     service:{name:'new1',layerId:0}, 
                     successCallback: querySuccess

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src = './dist/include-openlayers-local.js'></script>
+    <script src = './gaode.js'></script>
+    <script src = 'draw.js'></script>
+</head>
+<body>
+    <div id="menu">
+        <input type="button" class="ButtonLib" value="固定点查询" onclick="queryByPoint()" />
+    </div>
+    <div id = 'mapCon'></div>
+    <script>
+    const docLayer = new Zondy.Map.Doc('','new1',{
+            import:'localhost',
+            port:6163,
+        })
+    const map = new ol.Map({
+        target:'mapCon',
+        layers:[gaodeMapLayer,docLayer],
+        view:new ol.View({
+            projection: 'EPSG:4326',
+            center: [-53,50],
+            zoom: 4
+        })
+    });
+
+        function queryByPoint() {
+            //创建一个用于查询的圆
+            var pointObj = new Zondy.Object.Point2D(-50,50);
+            geomObj = new Zondy.Object.Circle(pointObj, 20);
+
+            //初始化查询结构对象，设置查询结构包含几何信息（查什么东西）
+            var queryStruct = new Zondy.Service.QueryFeatureStruct();
+            //是否包含几何图形信息
+            queryStruct.IncludeGeometry = true;
+            //是否包含属性信息
+            queryStruct.IncludeAttribute = true;
+            //是否包含图形显示参数
+            queryStruct.IncludeWebGraphic = true;
+
+            //指定查询规则（查询规则）
+            var rule = new Zondy.Service.QueryFeatureRule({
+                //是否将要素的可见性计算在内
+                EnableDisplayCondition: false,
+                //是否完全包含
+                MustInside: false,
+                //是否仅比较要素的外包矩形
+                CompareRectOnly: false,
+                //是否相交
+                Intersect: true
+            });
+
+            //实例化查询参数对象
+            var queryParam = new Zondy.Service.QueryParameter({
+                // r: Math.random(),
+                geometry: geomObj,//用什么来查询
+                resultFormat: "json",//查询结果返回格式
+                struct: queryStruct,// 设置查询结构
+                rule: rule//查询规格
+            });
+
+            //实例化地图文档查询服务对象
+            var queryService = new Zondy.Service.QueryDocFeature(queryParam, "new1", 0, {
+                ip: "localhost",
+                port: "6163"    //访问IGServer的端口号，.net版为6163，Java版为8089
+            });
+            //执行查询操作，querySuccess为查询回调函数
+            queryService.query(querySuccess, queryError);
+        }
+
+        function querySuccess(params) {
+            alert('查询成功')
+            console.log(params);
+            //初始化Zondy.Format.PolygonJSON类
+            var format = new Zondy.Format.PolygonJSON();
+            //将MapGIS要素JSON反序列化为ol.Feature类型数组
+            var features = format.read(params);
+
+            //实例化一个矢量图层drawLayerr用于高亮显示结果
+            var drawSource = new ol.source.Vector({
+                wrapX: false
+            });
+            drawSource.addFeatures(features);
+            drawLayer = new ol.layer.Vector({
+                source: drawSource,
+                style: new ol.style.Style({
+                    //填充色
+                    fill: new ol.style.Fill({
+                        color: 'rgba(255, 204, 51, 0.5)'
+                    }),
+                    //边线样式
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(255,204, 51, 1)',
+                        width: 1
+                    })
+                })
+            });
+
+            map.addLayer(drawLayer);
+            map.setView(new ol.View({
+                projection: 'EPSG:4326',
+                center: [-53,50],
+                zoom: 4
+            }));
+        }
+        function queryError(params) {
+            alert('查询失败')
+            console.log(params);
+        }
+
+    </script>
+</body>
+</html>

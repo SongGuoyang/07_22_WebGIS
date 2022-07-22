@@ -12,12 +12,8 @@
     <script src="./Point.js"></script>
 </head>
 <body>
-    <div id="menu">
-        <input type="button" class="ButtonLib" value="添加点要素" onclick="Point.add()" />
-    </div>
     <!-- 2.创建div容器 -->
     <div id = 'mapCon'></div>
-    
     <!-- 3.创建高德地图-->
     <!-- 
         参数一：显示瓦片的名称，可以为空
@@ -55,11 +51,11 @@
                 const layer = docLayer;
                 const attr = [{name:"name",value:"武汉",type:"string"}];
                 const service = {name:'map_point1',layerId:0};
-                Point.add({
+                    Point.add({
                     position, //属性名和属性值一样的话,可以只写一个 就相当于 position:position
                     attr,
                     service,
-                    layer
+                    layer,
                 })
             }); 
     </script>

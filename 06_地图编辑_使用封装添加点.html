@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- 1.引入openlayer -->
+    <script src = './dist/include-openlayers-local.js'></script>
+    <script src = './gaode.js'></script>
+    <script src = 'draw.js'></script>
+    <script src = 'addPoint.js'></script>
+</head>
+<body>
+    <div id="menu">
+        <input type="button" class="ButtonLib" value="添加点要素" onclick="addPoint()" />
+    </div>
+    <!-- 2.创建div容器 -->
+    <div id = 'mapCon'></div>
+    
+    <!-- 3.创建高德地图-->
+    <!-- 
+        参数一：显示瓦片的名称，可以为空
+        参数二：瓦片地图的实际名称
+        参数三：对象类型，IGServer的配置信息
+     -->
+    <script>
+        
+    // 4. 创建地图对象
+    const docLayer = new Zondy.Map.Doc('','map_point1',{
+            // ip地址
+            import:'localhost',
+            // 端口
+            port:6163,
+        })
+    // 4. 创建地图对象
+    const map = new ol.Map({
+        target:'mapCon',
+        layers:[gaodeMapLayer,docLayer],
+        view:new ol.View({
+            projection: 'EPSG:4326',
+            center: [-53,50],
+            zoom: 4
+        })
+    });
+
+    // 获取点击位置坐标
+    map.on('click', function (evt) {
+                //鼠标单击点坐标
+                const point1 = evt.coordinate;
+                // 调用封装的方法
+                addPoint({
+                    position:point1,
+                    layer:docLayer,
+                    attr:[{name:"name",value:"武汉",type:"string"}],
+                    service:{name:'map_point1',layerId:0}
+                })
+            });
+    </script>
+</body>
+</html>

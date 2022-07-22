@@ -7,7 +7,7 @@ const POINT_STYLE = {
     SymWidth: 6,
   }
   class Point {
-    static add({ position, attr, service, layer }) {
+    static add({position, attr, service, layer }) {
       /* 1、几何信息 */
       //创建一个点形状，描述点形状的几何信息
       var gpoint = new Zondy.Object.GPoint(position[0], position[1]) //createPoint();

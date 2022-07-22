@@ -12,18 +12,6 @@
 </head>
 <body>
     <div id="menu">
-        <!-- <label style="font-weight: bold;">
-            几何图形类型：&nbsp;
-        </label>
-        <select id="type">
-            <option value="None">无</option>
-            <option value="Point" selected="selected">点</option>
-            <option value="LineString">线</option>
-            <option value="Polygon">多边形</option>
-            <option value="Circle">圆</option>
-            <option value="Square">正方形</option>
-            <option value="Box">长方形</option>
-        </select> -->
         <input type="button" class="ButtonLib" value="添加点要素" onclick="addPoint()" />
     </div>
     <!-- 2.创建div容器 -->
@@ -40,7 +28,7 @@
         //绘制对象
         var draw;
     // 4. 创建地图对象
-    const docLayer = new Zondy.Map.Doc('','map_point1',{
+    const docLayer = new Zondy.Map.Doc('','map_area1',{
             // ip地址
             import:'localhost',
             // 端口
@@ -56,67 +44,18 @@
             zoom: 4
         })
     });
-    // //实例化一个矢量图层Vector作为绘制层
-    // var source = new ol.source.Vector({ wrapX: false });
-    //     var vector = new ol.layer.Vector({
-    //         source: source,
-    //         style: new ol.style.Style({
-    //             fill: new ol.style.Fill({
-    //                 color: 'rgba(255, 255, 255, 0.2)'
-    //             }),
-    //             stroke: new ol.style.Stroke({
-    //                 color: '#ffcc33',
-    //                 width: 2
-    //             }),
-    //             image: new ol.style.Circle({
-    //                 radius: 7,
-    //                 fill: new ol.style.Fill({
-    //                     color: '#ffcc33'
-    //                 })
-    //             })
-    //         })
-    //     });
-    //     //将绘制层添加到地图容器中
-    //     map.addLayer(vector);
-        
-    //     //根据绘制类型进行交互绘制图形处理
-    //     function addInteraction() {
-    //         //绘制类型
-    //         var value = typeSelect.value;
-    //         if (value !== 'None') {
-    //             if (source == null) {
-    //                 source = new ol.source.Vector({ wrapX: false });
-    //                 //添加绘制层数据源
-    //                 vector.setSource(source);
-    //             }
-    //             //实例化交互绘制类对象并添加到地图容器中
-    //             draw = createDraw(source,value);
-    //             map.addInteraction(draw);
-    //         }
-    //         else {
-    //             source = null;
-    //             //清空绘制图形
-    //             vector.setSource(source);
-    //         }
-    //     }
 
-    //     /**
-    //     * 用户更改绘制类型触发的事件.
-    //     * @param {Event} e 更改事件
-    //     */
-    //     typeSelect.onchange = function (e) {
-    //         //移除绘制图形
-    //         map.removeInteraction(draw);
-    //         //添加交互绘制功能控件
-    //         addInteraction();
-    //     };
-    //     //添加交互绘制功能控件
-    //     addInteraction();
-
-        //添加点要素
-        function addPoint() {
+    // 获取点击位置坐标
+    map.on('click', function (evt) {
+                //鼠标单击点坐标
+                var point = evt.coordinate;
+                addPoint(point)
+            });
+    //添加点要素
+        function addPoint(position) {
+            
             //创建一个点形状，描述点形状的几何信息
-            var gpoint = new Zondy.Object.GPoint(-55,40);//createPoint();
+            var gpoint = new Zondy.Object.GPoint(position[0],position[1]);//createPoint();
             //设置当前点要素的几何信息
             var fGeom = new Zondy.Object.FeatureGeometry({ PntGeom: [gpoint] });
             //随机输出1~8之间的整数,作为新添加的要素的颜色号
@@ -141,7 +80,7 @@
             featureSet.addFeature(feature);
 
             //创建一个编辑服务类
-            var editService = new Zondy.Service.EditDocFeature("map_point1", 0, { 
+            var editService = new Zondy.Service.EditDocFeature("map_area1", 2, { 
                 ip: "localhost", 
                 port: "6163"    //访问IGServer的端口号，.net版为6163，Java版为8089
             });

@@ -8,57 +8,50 @@ const POINT_STYLE = {
   }
   class Point {
     static add({position, attr, service, layer }) {
-      /* 1、几何信息 */
-      //创建一个点形状，描述点形状的几何信息
-      var gpoint = new Zondy.Object.GPoint(position[0], position[1]) //createPoint();
-      //设置当前点要素的几何信息
-      var fGeom = new Zondy.Object.FeatureGeometry({
-        PntGeom: [gpoint],
-      })
-      /* 2、图形参数 */
-      //描述点要素的符号参数信息
-      var pointInfo = new Zondy.Object.CPointInfo(POINT_STYLE)
-      //设置当前点要素的图形参数信息
-      var webGraphicInfo = new Zondy.Object.WebGraphicsInfo({
+      //1-1、设置几何信息
+    var gpoint = new Zondy.Object.GPoint(position[0], position[1]);
+    var fGeom = new Zondy.Object.FeatureGeometry({
+        PntGeom: [gpoint]
+    });
+    //1-2、设置样式信息
+    //描述点要素的符号参数信息
+    var pointInfo = new Zondy.Object.CPointInfo(POINT_STYLE);
+    //设置当前点要素的图形参数信息
+    var webGraphicInfo = new Zondy.Object.WebGraphicsInfo({
         InfoType: 1,
-        PntInfo: pointInfo,
-      })
-      /* 3、属性 */
-      //设置添加点要素的属性信息
-      var attValue = attr.map((item) => item.value)
-      /* 4、几何+图形+属性 构建要素*/
-      //创建一个要素
-      var feature = new Zondy.Object.Feature({
+        PntInfo: pointInfo
+    });
+    //1-3、属性信息
+    //设置添加点要素的属性信息
+    var attValue = attr.map(item => item.value);
+    /* 2、构建点要素 */
+    //创建一个要素
+    var feature = new Zondy.Object.Feature({
         fGeom: fGeom,
         GraphicInfo: webGraphicInfo,
-        AttValue: attValue,
-      })
-      //设置要素为点要素
-      feature.setFType(1)
-      //创建一个要素数据集
-      /* 5、创建要素集添加要素 */
-      var featureSet = new Zondy.Object.FeatureSet()
-      //设置属性结构
-      var cAttStruct = new Zondy.Object.CAttStruct({
-        FldName: attr.map((item) => item.key),
-        FldNumber: attr.length,
-        FldType: attr.map((item) => item.type),
-      })
-      featureSet.AttStruct = cAttStruct
-      //添加要素到要素数据集
-      featureSet.addFeature(feature)
-      /* 6、调用中地服务,添加要素 */
-      //创建一个编辑服务类
-      var editService = new Zondy.Service.EditDocFeature(
-        service.name,
-        service.layerId,
-        {
-          ip: 'localhost',
-          port: '6163', //访问IGServer的端口号，.net版为6163，Java版为8089
-        }
-      )
-      //执行添加点要素功能
-      editService.add(featureSet, this.onPntSuccess(layer))
+        AttValue: attValue
+    });
+    //设置要素为点要素
+    feature.setFType(1);
+    /* 3、创建要素集 */
+    //创建一个要素数据集
+    var featureSet = new Zondy.Object.FeatureSet();
+    //设置属性结构
+    var cAttStruct = new Zondy.Object.CAttStruct({
+        FldName: attr.map(item => item.name),
+        FldNumber: 1,
+        FldType: attr.map(item => item.type)
+    });
+    featureSet.AttStruct = cAttStruct;
+    //添加要素到要素数据集
+    featureSet.addFeature(feature);
+    /* 4、调用服务 */
+    //创建一个编辑服务类
+    var editService = new Zondy.Service.EditDocFeature(service.name, service.layerId, {
+        ip: "localhost",
+        port: 6163
+    });
+    editService.add(featureSet, this.onPntSuccess(layer));
     }
     static onPntSuccess(layer) {
       return function (data) {

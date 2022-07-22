@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src = './dist/include-openlayers-local.js'></script>
+    <script src = './gaode.js'></script>
+    <script src = 'draw.js'></script>
+    <script src = 'queryPoint.js'></script>
+</head>
+<body>
+    <div id = 'mapCon'></div>
+    <script>
+    const docLayer = new Zondy.Map.Doc('','new1',{
+            import:'localhost',
+            port:6163,
+        })
+    const map = new ol.Map({
+        target:'mapCon',
+        layers:[gaodeMapLayer,docLayer],
+        view:new ol.View({
+            projection: 'EPSG:4326',
+            center: [-53,50],
+            zoom: 4
+        })
+    });
+
+    // 获取点击位置坐标
+    map.on('click', function (evt) {
+                //鼠标单击点坐标
+                var point = evt.coordinate;
+                // 调用封装的方法
+                queryPoint({ 
+                    position:point, 
+                    service:{name:'new1',layerId:0}, 
+                    successCallback: querySuccess
+                })
+            });
+
+        function querySuccess(params) {
+            alert('查询成功')
+            console.log(params);
+            //初始化Zondy.Format.PolygonJSON类
+            var format = new Zondy.Format.PolygonJSON();
+            //将MapGIS要素JSON反序列化为ol.Feature类型数组
+            var features = format.read(params);
+
+            //实例化一个矢量图层drawLayerr用于高亮显示结果
+            var drawSource = new ol.source.Vector({
+                wrapX: false
+            });
+            drawSource.addFeatures(features);
+            drawLayer = new ol.layer.Vector({
+                source: drawSource,
+                style: new ol.style.Style({
+                    //填充色
+                    fill: new ol.style.Fill({
+                        color: 'rgba(255, 204, 51, 0.5)'
+                    }),
+                    //边线样式
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(255,204, 51, 1)',
+                        width: 1
+                    })
+                })
+            });
+
+            map.addLayer(drawLayer);
+            map.setView(new ol.View({
+                projection: 'EPSG:4326',
+                center: [-53,50],
+                zoom: 4
+            }));
+        }
+
+    </script>
+</body>
+</html>
